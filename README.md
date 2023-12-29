@@ -1,5 +1,5 @@
-![LatencyLensGithub](https://github.com/Kkthnx-Wow/LatencyLens/assets/40672673/f64d1e99-d29a-4114-aa13-0bd326b64c94)   
-LatencyLens offers real-time insights into your game's performance, displaying FPS, network latency, and memory usage of addons. This tool is designed to help you maintain optimal gameplay by providing crucial performance metrics at a glance.
+![LGIcon](https://github.com/Kkthnx-Wow/LatencyGuard/assets/40672673/b3077366-8612-4a53-ba45-586750c43642)   
+LatencyGuard optimizes your gameplay experience by dynamically adjusting the Spell Queue Window based on your current network latency.
 
 ## Join the Community
 Connect with thousands of users who have embraced Kkthnx's AddOns. Whether you're a casual user or want to dive deeper into discussions, join our vibrant community on [Discord](https://discord.gg/Rc9wcK9cAB).
