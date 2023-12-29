@@ -1,0 +1,6 @@
+{
+    "Lua.diagnostics.globals": [
+        "InterfaceOptions_AddCategory",
+        "GameTooltip_Hide"
+    ]
+}

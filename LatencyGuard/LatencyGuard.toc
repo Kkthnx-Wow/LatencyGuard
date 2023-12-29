@@ -1,0 +1,10 @@
+## Interface: 100200
+## Title: |cFF00CCFFLatencyGuard|r
+## Notes: Optimizes your gameplay experience by dynamically adjusting the Spell Queue Window based on your current network latency.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
+## Author: Joshua Russell (Kkthnx)
+## SavedVariables: LatencyGuard
+## IconTexture: Interface\AddOns\LatencyGuard\LatencyGuardIcon.tga
+
+Localization.lua
+Config.lua
+Main.lua
