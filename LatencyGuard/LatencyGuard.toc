@@ -1,10 +1,17 @@
-## Interface: 100200
-## Title: |cFF00CCFFLatencyGuard|r
-## Notes: Optimizes your gameplay experience by dynamically adjusting the Spell Queue Window based on your current network latency.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
-## Author: Joshua Russell (Kkthnx)
-## SavedVariables: LatencyGuard
-## IconTexture: Interface\AddOns\LatencyGuard\LatencyGuardIcon.tga
+## Interface: 100107
+## Name: Latency Guard
+## Title: |cff5bc0beLatency Guard|r
+## Notes: Optimizes your gameplay experience by dynamically adjusting|nthe 'Spell Queue Window' based on your current network latency.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
+## Author: Josh "Kkthnx" Russell
+## Version: 1.0.0
+## IconTexture: 132359
+## SavedVariables: LatencyGuardDB
+## X-Support: DF
 
-Localization.lua
-Config.lua
-Main.lua
+Libs\Dashi\embed.xml
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+
+LatencyGuard.lua
+
+Config\Settings.lua

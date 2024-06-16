@@ -1,6 +1,18 @@
 {
     "Lua.diagnostics.globals": [
         "InterfaceOptions_AddCategory",
-        "GameTooltip_Hide"
+        "GameTooltip_Hide",
+        "HelpTip",
+        "ChatFrame1",
+        "enabled",
+        "SlashCmdList",
+        "nop",
+        "UIParentLoadAddOn",
+        "DisplayTableInspectorWindow",
+        "DEFAULT_CHAT_FRAME",
+        "Settings",
+        "GenerateClosure",
+        "MinimalSliderWithSteppersMixin",
+        "SettingsPanel"
     ]
 }
