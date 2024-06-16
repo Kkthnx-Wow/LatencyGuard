@@ -1,18 +1,31 @@
-![LGIcon](https://github.com/Kkthnx-Wow/LatencyGuard/assets/40672673/b3077366-8612-4a53-ba45-586750c43642)   
-LatencyGuard optimizes your gameplay experience by dynamically adjusting the Spell Queue Window based on your current network latency.
+# Latency Guard
+![ability_warrior_shieldguard](https://github.com/Kkthnx-Wow/LatencyGuard/assets/40672673/a12a84e0-9781-490b-804b-60dc8d0c2368)
 
-## Join the Community
-Connect with thousands of users who have embraced Kkthnx's AddOns. Whether you're a casual user or want to dive deeper into discussions, join our vibrant community on [Discord](https://discord.gg/Rc9wcK9cAB).
+Latency Guard optimizes your gameplay experience by dynamically adjusting the 'Spell Queue Window' based on your current network latency.
 
-*Why did the Orc go to Kkthnx's Discord?  
-To find a ‘Warchief’-ly good addon experience!*
+## Overview
 
-## Gift of Appreciation
-Show your support for the hard work and dedication put into KkthnxUI by gifting gametime or Blizzard balance to Kkthnx's gamertag: **Kkthnx#1105** or send it to **JRussell20@gmail.com** or donate through PayPal @ https://www.paypal.com/paypalme/kkthnxtv.
+Latency Guard helps you maintain an optimal gaming experience by automatically adjusting the `Spell Queue Window` to match your network latency. This adjustment ensures that your spells and abilities are executed with minimal delay, providing a smoother and more responsive gameplay experience.
 
-### Gold Appreciation
-You can also show your support by sending gold to Kkthnx on the Area 52 realm.
-Contact Kkthnx in-game on Area 52 or send gold by mail.
+## Features
 
-## Let's Build Together!
-Your contributions, big or small, play a crucial role in shaping the future of KkthnxUI. Join us in making the UI the best it can be! For questions or assistance, reach out on [Discord](https://discord.gg/Rc9wcK9cAB).
+- **Dynamic Latency Adjustment**: Automatically updates the `Spell Queue Window` based on your current network latency.
+- **Zero Latency Detection**: Handles cases where latency drops to zero by starting a periodic check to ensure accurate updates.
+- **User Feedback**: Optionally receive feedback messages when the `Spell Queue Window` is updated.
+- **Combat Safe**: Queues updates during combat and processes them once combat ends.
+
+## Installation
+
+1. Download the latest version of Latency Guard from [GitHub Releases](https://github.com/Kkthnx-Wow/LatencyGuard/releases).
+2. Extract the downloaded zip file.
+3. Copy the `LatencyGuard` folder to your World of Warcraft Addons directory:
+   - _Windows_: `C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\`
+   - _Mac_: `/Applications/World of Warcraft/_retail_/Interface/AddOns/`
+
+4. Restart World of Warcraft or reload your UI with `/reload`.
+
+## Usage
+Latency Guard works in the background once enabled. You can configure it through the provided options to suit your needs. The addon will automatically adjust the Spell Queue Window based on your current latency, ensuring an optimized gameplay experience.
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
