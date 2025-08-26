@@ -1,17 +1,20 @@
-## Interface: 100107
+## Interface: 110105 110200
 ## Name: Latency Guard
 ## Title: |cff5bc0beLatency Guard|r
-## Notes: Optimizes your gameplay experience by dynamically adjusting|nthe 'Spell Queue Window' based on your current network latency.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
+## Notes: Advanced latency optimization addon that dynamically adjusts|nthe 'Spell Queue Window' based on your network latency.|n|nFeatures: Combat-safe updates, zero-latency handling,|nconfigurable thresholds, debug mode, multi-language support.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
 ## Author: Josh "Kkthnx" Russell
-## Version: 1.0.0
-## IconTexture: 132359
+## Version: 2.0.0
+## IconTexture: 134983
 ## SavedVariables: LatencyGuardDB
-## X-Support: DF
+## X-Support: TWW
+## X-Category: Combat
+## X-Localizations: enUS, deDE, frFR, esES, ruRU
+## X-Website: https://github.com/Kkthnx-Wow/LatencyGuard
 
 Libs\Dashi\embed.xml
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 
 LatencyGuard.lua
-
+Locale\Localization.lua
 Config\Settings.lua

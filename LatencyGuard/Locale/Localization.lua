@@ -1,51 +1,108 @@
-LatencyGuardLocalization = {}
-local L = LatencyGuardLocalization
+local _, LatencyGuard = ...
 
-local locale = GetLocale()
+-- Use Dashi's localization helper
+local L_en = LatencyGuard.L("enUS")
+L_en["LatencyGuard"] = "LatencyGuard"
+L_en["LatencyGuard Configuration"] = "LatencyGuard Configuration"
+L_en["Customize the behavior of LatencyGuard."] = "Customize the behavior of LatencyGuard"
+L_en["Enable Latency Guard"] = "Enable Latency Guard"
+L_en["Enable Feedback Messages"] = "Enable Feedback Messages"
+L_en["Latency Threshold"] = "Latency Threshold"
+L_en["Debug Mode"] = "Debug Mode"
+L_en["Maximum Latency Cap"] = "Maximum Latency Cap"
+L_en["SpellQueueWindow updated: %d -> %d (+%d)"] = "SpellQueueWindow updated: %d -> %d (+%d)"
+L_en["SpellQueueWindow externally modified to: %d"] = "SpellQueueWindow externally modified to: %d"
+L_en["Zero latency detected, starting enhanced monitoring"] = "Zero latency detected, starting enhanced monitoring"
+L_en["Normal latency restored, resuming standard monitoring"] = "Normal latency restored, resuming standard monitoring"
+L_en["LatencyGuard enabled"] = "LatencyGuard enabled"
+L_en["LatencyGuard disabled"] = "LatencyGuard disabled"
+L_en["Debug mode enabled - expect verbose output"] = "Debug mode enabled - expect verbose output"
+L_en["Debug mode disabled"] = "Debug mode disabled"
+L_en["Maximum latency cap set to: %d ms"] = "Maximum latency cap set to: %d ms"
 
--- English (default language)
-L["LatencyGuard"] = "LatencyGuard"
-L["LatencyGuard Configuration"] = "LatencyGuard Configuration"
-L["Customize the behavior of LatencyGuard."] = "Customize the behavior of LatencyGuard"
-L["Enable LatencyGuard"] = "Enable LatencyGuard"
-L["Enable Feedback Messages"] = "Enable Feedback Messages"
-L["Latency Threshold: 10"] = "Latency Threshold: 10"
-L["Latency Threshold: "] = "Latency Threshold: "
-L["Latency Threshold"] = "Latency Threshold"
-L["Adjust this value to set the latency threshold for your addon."] = "Adjust this value to set the latency threshold for your addon"
+-- Settings tooltips (enUS)
+L_en["Enable or disable the LatencyGuard functionality.|n|nWhen enabled, automatically adjusts SpellQueueWindow based on your network latency for optimal spell casting performance."] = "Enable or disable the LatencyGuard functionality.|n|nWhen enabled, automatically adjusts SpellQueueWindow based on your network latency for optimal spell casting performance."
+L_en["Show chat messages when SpellQueueWindow is updated.|n|nHelps you monitor the addon's activity and understand when adjustments are made."] = "Show chat messages when SpellQueueWindow is updated.|n|nHelps you monitor the addon's activity and understand when adjustments are made."
+L_en["The minimum change in latency (in milliseconds) required to update the SpellQueueWindow.|n|nLower values = more frequent updates|nHigher values = fewer, larger adjustments|n|nRecommended: 1-5ms for responsive gameplay, 10-20ms for stable connections."] = "The minimum change in latency (in milliseconds) required to update the SpellQueueWindow.|n|nLower values = more frequent updates|nHigher values = fewer, larger adjustments|n|nRecommended: 1-5ms for responsive gameplay, 10-20ms for stable connections."
+L_en["Enable detailed debug information in chat.|n|nWarning: This will generate many chat messages and should only be used for troubleshooting."] = "Enable detailed debug information in chat.|n|nWarning: This will generate many chat messages and should only be used for troubleshooting."
+L_en["Maximum allowed SpellQueueWindow value (in milliseconds).|n|nPrevents extremely high latency spikes from setting unreasonable values.|n|nRecommended: 200-400ms depending on your connection stability."] = "Maximum allowed SpellQueueWindow value (in milliseconds).|n|nPrevents extremely high latency spikes from setting unreasonable values.|n|nRecommended: 200-400ms depending on your connection stability."
 
 -- German (deDE)
-if locale == "deDE" then
-	L["LatencyGuard"] = "LatenzWächter"
-	L["LatencyGuard Configuration"] = "Konfiguration des LatenzWächters"
-	L["Customize the behavior of LatencyGuard."] = "Passe das Verhalten des LatenzWächters an."
-	L["Enable LatencyGuard"] = "LatenzWächter aktivieren"
-	L["Enable Feedback Messages"] = "Feedback-Nachrichten aktivieren"
-	L["Latency Threshold: 10"] = "Latenzschwelle: 10"
-	L["Latency Threshold: "] = "Latenzschwelle: "
-	L["Latency Threshold"] = "Latenzschwelle"
-	L["Adjust this value to set the latency threshold for your addon."] = "Passe diesen Wert an, um die Latenzschwelle für dein Addon festzulegen."
-end
+local L_de = LatencyGuard.L("deDE")
+L_de["LatencyGuard"] = "LatenzWächter"
+L_de["LatencyGuard Configuration"] = "Konfiguration des LatenzWächters"
+L_de["Customize the behavior of LatencyGuard."] = "Passe das Verhalten des LatenzWächters an."
+L_de["Enable Latency Guard"] = "LatenzWächter aktivieren"
+L_de["Enable Feedback Messages"] = "Feedback-Nachrichten aktivieren"
+L_de["Latency Threshold"] = "Latenzschwelle"
+L_de["Debug Mode"] = "Debug-Modus"
+L_de["Maximum Latency Cap"] = "Maximale Latenzgrenze"
+L_de["SpellQueueWindow updated: %d -> %d (+%d)"] = "ZauberWarteschlangeFenster aktualisiert: %d -> %d (+%d)"
+L_de["SpellQueueWindow externally modified to: %d"] = "ZauberWarteschlangeFenster extern geändert auf: %d"
+L_de["Zero latency detected, starting enhanced monitoring"] = "Null-Latenz erkannt, verstärkte Überwachung gestartet"
+L_de["Normal latency restored, resuming standard monitoring"] = "Normale Latenz wiederhergestellt, Standardüberwachung fortgesetzt"
+L_de["LatencyGuard enabled"] = "LatenzWächter aktiviert"
+L_de["LatencyGuard disabled"] = "LatenzWächter deaktiviert"
+L_de["Debug mode enabled - expect verbose output"] = "Debug-Modus aktiviert - ausführliche Ausgabe erwartet"
+L_de["Debug mode disabled"] = "Debug-Modus deaktiviert"
+L_de["Maximum latency cap set to: %d ms"] = "Maximale Latenzgrenze auf %d ms gesetzt"
 
 -- French (frFR)
-if locale == "frFR" then
-	L["LatencyGuard"] = "Garde de latence"
-	L["LatencyGuard Configuration"] = "Configuration de la Garde de latence"
-	L["Customize the behavior of LatencyGuard."] = "Personnalisez le comportement de la Garde de latence."
-	L["Enable LatencyGuard"] = "Activer la Garde de latence"
-	L["Enable Feedback Messages"] = "Activer les messages de retour"
-	L["Latency Threshold: 10"] = "Seuil de latence : 10"
-	L["Latency Threshold: "] = "Seuil de latence : "
-	L["Latency Threshold"] = "Seuil de latence"
-	L["Adjust this value to set the latency threshold for your addon."] = "Ajustez cette valeur pour définir le seuil de latence de votre addon."
-end
+local L_fr = LatencyGuard.L("frFR")
+L_fr["LatencyGuard"] = "Garde de latence"
+L_fr["LatencyGuard Configuration"] = "Configuration de la Garde de latence"
+L_fr["Customize the behavior of LatencyGuard."] = "Personnalisez le comportement de la Garde de latence."
+L_fr["Enable Latency Guard"] = "Activer la Garde de latence"
+L_fr["Enable Feedback Messages"] = "Activer les messages de retour"
+L_fr["Latency Threshold"] = "Seuil de latence"
+L_fr["Debug Mode"] = "Mode débogage"
+L_fr["Maximum Latency Cap"] = "Plafond de latence maximum"
+L_fr["SpellQueueWindow updated: %d -> %d (+%d)"] = "Fenetre de file d'attente des sorts mise a jour: %d -> %d (+%d)"
+L_fr["SpellQueueWindow externally modified to: %d"] = "Fenêtre de file d'attente des sorts modifiée à: %d"
+L_fr["Zero latency detected, starting enhanced monitoring"] = "Latence zéro détectée, surveillance renforcée démarrée"
+L_fr["Normal latency restored, resuming standard monitoring"] = "Latence normale restaurée, surveillance standard reprise"
+L_fr["LatencyGuard enabled"] = "Garde de latence activée"
+L_fr["LatencyGuard disabled"] = "Garde de latence désactivée"
+L_fr["Debug mode enabled - expect verbose output"] = "Mode débogage activé - sortie verbeuse attendue"
+L_fr["Debug mode disabled"] = "Mode débogage désactivé"
+L_fr["Maximum latency cap set to: %d ms"] = "Plafond de latence maximum défini à %d ms"
 
--- Add additional languages following the same pattern
+-- Spanish (esES)
+local L_es = LatencyGuard.L("esES")
+L_es["LatencyGuard"] = "Guardia de Latencia"
+L_es["LatencyGuard Configuration"] = "Configuración del Guardia de Latencia"
+L_es["Customize the behavior of LatencyGuard."] = "Personaliza el comportamiento del Guardia de Latencia."
+L_es["Enable Latency Guard"] = "Activar Guardia de Latencia"
+L_es["Enable Feedback Messages"] = "Activar Mensajes de Retroalimentación"
+L_es["Latency Threshold"] = "Umbral de Latencia"
+L_es["Debug Mode"] = "Modo de Depuración"
+L_es["Maximum Latency Cap"] = "Límite Máximo de Latencia"
+L_es["SpellQueueWindow updated: %d -> %d (+%d)"] = "Ventana de cola de hechizos actualizada: %d -> %d (+%d)"
+L_es["SpellQueueWindow externally modified to: %d"] = "Ventana de cola de hechizos modificada externamente a: %d"
+L_es["Zero latency detected, starting enhanced monitoring"] = "Latencia cero detectada, iniciando monitoreo mejorado"
+L_es["Normal latency restored, resuming standard monitoring"] = "Latencia normal restaurada, reanudando monitoreo estándar"
+L_es["LatencyGuard enabled"] = "Guardia de Latencia activado"
+L_es["LatencyGuard disabled"] = "Guardia de Latencia desactivado"
+L_es["Debug mode enabled - expect verbose output"] = "Modo de depuración activado - esperar salida detallada"
+L_es["Debug mode disabled"] = "Modo de depuración desactivado"
+L_es["Maximum latency cap set to: %d ms"] = "Límite máximo de latencia establecido en %d ms"
 
--- Function to handle localization
-function GetLocalization(string)
-	return L[string] or string
-end
-
--- Usage
--- local text = GetLocalization("LatencyGuard Configuration")
+-- Russian (ruRU)
+local L_ru = LatencyGuard.L("ruRU")
+L_ru["LatencyGuard"] = "Страж Задержки"
+L_ru["LatencyGuard Configuration"] = "Настройки Стража Задержки"
+L_ru["Customize the behavior of LatencyGuard."] = "Настройте поведение Стража Задержки."
+L_ru["Enable Latency Guard"] = "Включить Страж Задержки"
+L_ru["Enable Feedback Messages"] = "Включить Сообщения Обратной Связи"
+L_ru["Latency Threshold"] = "Порог Задержки"
+L_ru["Debug Mode"] = "Режим Отладки"
+L_ru["Maximum Latency Cap"] = "Максимальный Предел Задержки"
+L_ru["SpellQueueWindow updated: %d -> %d (+%d)"] = "Окно очереди заклинаний обновлено: %d -> %d (+%d)"
+L_ru["SpellQueueWindow externally modified to: %d"] = "Окно очереди заклинаний изменено извне на: %d"
+L_ru["Zero latency detected, starting enhanced monitoring"] = "Обнаружена нулевая задержка, запуск усиленного мониторинга"
+L_ru["Normal latency restored, resuming standard monitoring"] = "Нормальная задержка восстановлена, возобновление стандартного мониторинга"
+L_ru["LatencyGuard enabled"] = "Страж Задержки включен"
+L_ru["LatencyGuard disabled"] = "Страж Задержки отключен"
+L_ru["Debug mode enabled - expect verbose output"] = "Режим отладки включен - ожидается подробный вывод"
+L_ru["Debug mode disabled"] = "Режим отладки выключен"
+L_ru["Maximum latency cap set to: %d ms"] = "Максимальный предел задержки установлен на %d мс"
