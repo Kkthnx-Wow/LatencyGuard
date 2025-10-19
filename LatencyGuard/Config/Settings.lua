@@ -1,3 +1,5 @@
+-- Settings registration for LatencyGuard.
+-- Uses Dashi's settings API; titles/tooltips are localized via L.
 local _, LatencyGuard = ...
 local L = LatencyGuard.L
 
@@ -7,7 +9,7 @@ LatencyGuard:RegisterSettings("LatencyGuardDB", {
 		type = "toggle",
 		title = L["Enable Latency Guard"],
 		tooltip = L["Enable or disable the LatencyGuard functionality.|n|nWhen enabled, automatically adjusts SpellQueueWindow based on your network latency for optimal spell casting performance."],
-		default = false,
+		default = true,
 	},
 	{
 		key = "userWantsFeedback",

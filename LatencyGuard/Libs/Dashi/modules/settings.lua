@@ -1,4 +1,6 @@
+-- Settings builder and helpers; cache globals and formatters for performance.
 local addonName, addon = ...
+local string_format = string.format
 
 local function onSettingChanged(setting, value)
 	addon:TriggerOptionCallback(setting.variableKey, value)
@@ -8,52 +10,54 @@ end
 -- 	setting:SetValue(value, true)
 -- end
 
-local createCanvas; do
+local createCanvas
+do
 	local canvasMixin = {}
 	function canvasMixin:SetDefaultsHandler(callback)
 		local button = self:GetParent().Header.DefaultsButton
 		button:Show()
-		button:SetScript('OnClick', callback)
+		button:SetScript("OnClick", callback)
 	end
 
 	function createCanvas(name)
-		local frame = CreateFrame('Frame')
+		local frame = CreateFrame("Frame")
 
 		-- replicate header from SettingsListTemplate
-		local header = CreateFrame('Frame', nil, frame)
-		header:SetPoint('TOPLEFT')
-		header:SetPoint('TOPRIGHT')
+		local header = CreateFrame("Frame", nil, frame)
+		header:SetPoint("TOPLEFT")
+		header:SetPoint("TOPRIGHT")
 		header:SetHeight(50)
 		frame.Header = header
 
-		local title = header:CreateFontString(nil, 'ARTWORK', 'GameFontHighlightHuge')
-		title:SetPoint('TOPLEFT', 7, -22)
-		title:SetJustifyH('LEFT')
-		title:SetText(string.format('%s - %s', addonName, name))
+		local title = header:CreateFontString(nil, "ARTWORK", "GameFontHighlightHuge")
+		title:SetPoint("TOPLEFT", 7, -22)
+		title:SetJustifyH("LEFT")
+		title:SetText(string_format("%s - %s", addonName, name))
 		header.Title = title
 
-		local defaults = CreateFrame('Button', nil, header, 'UIPanelButtonTemplate')
-		defaults:SetPoint('TOPRIGHT', -36, -16)
+		local defaults = CreateFrame("Button", nil, header, "UIPanelButtonTemplate")
+		defaults:SetPoint("TOPRIGHT", -36, -16)
 		defaults:SetSize(96, 22)
 		defaults:SetText(SETTINGS_DEFAULTS)
 		defaults:Hide()
 		header.DefaultsButton = defaults
 
-		local divider = header:CreateTexture(nil, 'ARTWORK')
-		divider:SetPoint('TOP', 0, -50)
-		divider:SetAtlas('Options_HorizontalDivider', true)
+		local divider = header:CreateTexture(nil, "ARTWORK")
+		divider:SetPoint("TOP", 0, -50)
+		divider:SetAtlas("Options_HorizontalDivider", true)
 
 		-- exposed container the addon can use
-		local canvas = Mixin(CreateFrame('Frame', nil, frame), canvasMixin)
-		canvas:SetPoint('BOTTOMLEFT', 0, 5)
-		canvas:SetPoint('BOTTOMRIGHT', -12, 5)
-		canvas:SetPoint('TOP', 0, -56)
+		local canvas = Mixin(CreateFrame("Frame", nil, frame), canvasMixin)
+		canvas:SetPoint("BOTTOMLEFT", 0, 5)
+		canvas:SetPoint("BOTTOMRIGHT", -12, 5)
+		canvas:SetPoint("TOP", 0, -56)
 
 		return frame, canvas
 	end
 end
 
-local createColorPicker; do -- I wish Settings.CreateColorPicker was a thing
+local createColorPicker
+do -- I wish Settings.CreateColorPicker was a thing
 	local colorPickerMixin = {}
 	function colorPickerMixin:OnSettingValueChanged(setting, value)
 		local r, g, b, a = addon:CreateColor(value):GetRGBA()
@@ -100,10 +104,10 @@ local createColorPicker; do -- I wish Settings.CreateColorPicker was a thing
 		self:SetSize(280, 26) -- templates have a size
 
 		-- creating widgets would be equal to :OnLoad()
-		self.Swatch = CreateFrame('Button', nil, self, 'ColorSwatchTemplate')
+		self.Swatch = CreateFrame("Button", nil, self, "ColorSwatchTemplate")
 		self.Swatch:SetSize(30, 30)
-		self.Swatch:SetPoint('LEFT', self, 'CENTER', -80, 0)
-		self.Swatch:SetScript('OnClick', onClick)
+		self.Swatch:SetPoint("LEFT", self, "CENTER", -80, 0)
+		self.Swatch:SetScript("OnClick", onClick)
 
 		-- setting up state would be equal to :Init()
 		local setting = initializer:GetSetting()
@@ -118,7 +122,7 @@ local createColorPicker; do -- I wish Settings.CreateColorPicker was a thing
 			g = g,
 			b = b,
 			opacity = a,
-			hasOpacity = #value == 8
+			hasOpacity = #value == 8,
 		}
 
 		self.Swatch:SetColorRGB(r, g, b)
@@ -130,7 +134,7 @@ local createColorPicker; do -- I wish Settings.CreateColorPicker was a thing
 
 	function createColorPicker(category, setting, options, tooltip)
 		local data = Settings.CreateSettingInitializerData(setting, options, tooltip)
-		local init = Settings.CreateElementInitializer('SettingsListElementTemplate', data)
+		local init = Settings.CreateElementInitializer("SettingsListElementTemplate", data)
 		init.InitFrame = initFrame
 		init:AddSearchTags(setting:GetName())
 		SettingsPanel:GetLayout(category):AddInitializer(init)
@@ -147,39 +151,39 @@ local function defaultSliderFormatter(value)
 end
 
 local function registerSetting(category, savedvariable, info)
-	addon:ArgCheck(info.key, 3, 'string')
-	addon:ArgCheck(info.title, 3, 'string')
-	addon:ArgCheck(info.type, 3, 'string')
+	addon:ArgCheck(info.key, 3, "string")
+	addon:ArgCheck(info.title, 3, "string")
+	addon:ArgCheck(info.type, 3, "string")
 	if info.requires then
-		addon:ArgCheck(info.requires, 3, 'string')
+		addon:ArgCheck(info.requires, 3, "string")
 	end
 	assert(info.default ~= nil, "default must be set")
 
-	local uniqueKey = savedvariable .. '_' .. info.key
+	local uniqueKey = savedvariable .. "_" .. info.key
 	local setting = Settings.RegisterAddOnSetting(category, uniqueKey, info.key, _G[savedvariable], type(info.default), info.title, info.default)
 
 	local initializer
-	if info.type == 'toggle' then
+	if info.type == "toggle" then
 		initializer = Settings.CreateCheckbox(category, setting, info.tooltip)
-	elseif info.type == 'slider' then
-		addon:ArgCheck(info.minValue, 3, 'number')
-		addon:ArgCheck(info.maxValue, 3, 'number')
+	elseif info.type == "slider" then
+		addon:ArgCheck(info.minValue, 3, "number")
+		addon:ArgCheck(info.maxValue, 3, "number")
 		if info.valueFormat then
-			addon:ArgCheck(info.valueFormat, 3, 'string', 'function')
+			addon:ArgCheck(info.valueFormat, 3, "string", "function")
 		end
 
 		local options = Settings.CreateSliderOptions(info.minValue, info.maxValue, info.valueStep or 1)
-		if type(info.valueFormat) == 'string' then
+		if type(info.valueFormat) == "string" then
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, GenerateClosure(formatCustom, info.valueFormat))
-		elseif type(info.valueFormat) == 'function' then
+		elseif type(info.valueFormat) == "function" then
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, info.valueFormat)
 		else
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, defaultSliderFormatter)
 		end
 
 		initializer = Settings.CreateSlider(category, setting, options, info.tooltip)
-	elseif info.type == 'menu' then
-		addon:ArgCheck(info.options, 3, 'table')
+	elseif info.type == "menu" then
+		addon:ArgCheck(info.options, 3, "table")
 		local options = function()
 			local container = Settings.CreateControlTextContainer()
 			for _, option in next, info.options do
@@ -189,10 +193,10 @@ local function registerSetting(category, savedvariable, info)
 		end
 
 		initializer = Settings.CreateDropdown(category, setting, options, info.tooltip)
-	elseif info.type == 'color' or info.type == 'colorpicker' then -- TODO: remove in 12.x, compat
+	elseif info.type == "color" or info.type == "colorpicker" then -- TODO: remove in 12.x, compat
 		initializer = createColorPicker(category, setting, nil, info.tooltip)
 	else
-		error('type is invalid') -- TODO: make this prettier
+		error("type is invalid") -- TODO: make this prettier
 		return
 	end
 
@@ -252,7 +256,7 @@ end
 
 local settingsCategoryID
 local function registerSettings(savedvariable, settings)
-	local categoryName = C_AddOns.GetAddOnMetadata(addonName, 'Title')
+	local categoryName = C_AddOns.GetAddOnMetadata(addonName, "Title")
 	local category = Settings.RegisterVerticalLayoutCategory(categoryName)
 	Settings.RegisterAddOnCategory(category)
 	settingsCategoryID = category:GetID()
@@ -266,8 +270,8 @@ local function registerSettings(savedvariable, settings)
 
 	local keys = {}
 	local initializers = {}
-	local dependents = addon.T{}
-	local children = addon.T{}
+	local dependents = addon.T({})
+	local children = addon.T({})
 	for index, setting in next, settings do
 		-- if firstInstall then
 		-- 	setting.firstInstall = true
@@ -288,7 +292,7 @@ local function registerSettings(savedvariable, settings)
 		for key, requires in next, dependents do
 			-- check if there are bad dependencies
 			assert(not not keys[requires], string.format("setting '%s' can't depend on invalid setting '%s'", key, requires))
-			assert(settings[keys[requires]].type == 'toggle', string.format("setting '%s' can't depend on a non-toggle setting", key))
+			assert(settings[keys[requires]].type == "toggle", string.format("setting '%s' can't depend on a non-toggle setting", key))
 
 			-- depend on "parent" setting
 			initializers[key]:SetParentInitializer(initializers[requires], GenerateClosure(isSettingEnabled, initializers[requires]))
@@ -318,7 +322,7 @@ local function registerSettings(savedvariable, settings)
 
 			-- delay callback until settings are shown
 			local shown
-			SettingsPanel:HookScript('OnShow', function()
+			SettingsPanel:HookScript("OnShow", function()
 				if not shown then
 					info.callback(canvas)
 					shown = true
@@ -380,8 +384,8 @@ namespace:RegisterSettings('MyAddOnDB', {
 ```
 --]]
 function addon:RegisterSettings(savedvariable, settings)
-	addon:ArgCheck(savedvariable, 1, 'string')
-	addon:ArgCheck(settings, 2, 'table')
+	addon:ArgCheck(savedvariable, 1, "string")
+	addon:ArgCheck(settings, 2, "table")
 	assert(not self.registeredVariables, "can't register settings more than once")
 	self.registeredVariables = savedvariable
 
@@ -395,7 +399,7 @@ function addon:RegisterSettings(savedvariable, settings)
 		registerSettings(savedvariable, settings)
 	else
 		-- don't abuse OnLoad internally
-		addon:RegisterEvent('ADDON_LOADED', function(_, name)
+		addon:RegisterEvent("ADDON_LOADED", function(_, name)
 			if name == addonName then
 				registerSettings(savedvariable, settings)
 				return true -- unregister
@@ -411,8 +415,8 @@ The savedvariables will be stored under the main savedvariables in a table entry
 The `settings` are identical to that of `namespace:RegisterSettings`.
 --]]
 function addon:RegisterSubSettings(name, settings)
-	addon:ArgCheck(name, 1, 'string')
-	addon:ArgCheck(settings, 2, 'table')
+	addon:ArgCheck(name, 1, "string")
+	addon:ArgCheck(settings, 2, "table")
 	assert(not not self.settingsChildren, "can't register sub-settings without root settings")
 	assert(not self.settingsChildren[name], "can't register two sub-settings with the same name")
 	self.settingsChildren[name] = {
@@ -430,8 +434,8 @@ Canvas frame has a custom method `SetDefaultsHandler` which takes a callback as 
 This callback is triggered when the "Defaults" button is clicked.
 --]]
 function addon:RegisterSubSettingsCanvas(name, callback)
-	addon:ArgCheck(name, 1, 'string')
-	addon:ArgCheck(callback, 2, 'function')
+	addon:ArgCheck(name, 1, "string")
+	addon:ArgCheck(callback, 2, "function")
 	assert(not not self.settingsChildren, "can't register sub-settings without root settings")
 	assert(not self.settingsChildren[name], "can't register two sub-settings with the same name")
 	self.settingsChildren[name] = {
@@ -444,7 +448,7 @@ end
 Opens the settings panel for this addon.
 --]]
 function addon:OpenSettings()
-	assert(not not settingsCategoryID, 'must register settings first')
+	assert(not not settingsCategoryID, "must register settings first")
 	Settings.OpenToCategory(settingsCategoryID)
 end
 
@@ -453,7 +457,7 @@ Wrapper for `namespace:RegisterSlash(...)`, except the callback is provided and 
 --]]
 function addon:RegisterSettingsSlash(...)
 	-- gotta do this dumb shit because `..., callback` is not valid Lua
-	local data = {...}
+	local data = { ... }
 	table.insert(data, function()
 		addon:OpenSettings()
 	end)
@@ -465,7 +469,7 @@ end
 Returns the value for the given option `key`.
 --]]
 function addon:GetOption(key)
-	addon:ArgCheck(key, 1, 'string')
+	addon:ArgCheck(key, 1, "string")
 	assert(addon:AreOptionsLoaded(), "options aren't loaded")
 	assert(_G[self.registeredVariables][key] ~= nil, "key doesn't exist")
 	return _G[self.registeredVariables][key]
@@ -475,7 +479,7 @@ end
 Sets a new `value` to the given options `key`.
 --]]
 function addon:SetOption(key, value)
-	addon:ArgCheck(key, 1, 'string')
+	addon:ArgCheck(key, 1, "string")
 	assert(addon:AreOptionsLoaded(), "options aren't loaded")
 	assert(_G[self.registeredVariables][key] ~= nil, "key doesn't exist")
 
@@ -487,15 +491,15 @@ end
 Checks to see if the savedvariables has been loaded in the game.
 --]]
 function addon:AreOptionsLoaded()
-	return (not not self.registeredVariables) and (not not _G[self.registeredVariables])
+	return (not not self.registeredVariables) and not not _G[self.registeredVariables]
 end
 
 --[[ namespace:RegisterOptionCallback(_key_, _callback_) ![](https://img.shields.io/badge/function-blue)
 Register a `callback` function with the option `key`.
 --]]
 function addon:RegisterOptionCallback(key, callback)
-	addon:ArgCheck(key, 1, 'string')
-	addon:ArgCheck(callback, 2, 'function')
+	addon:ArgCheck(key, 1, "string")
+	addon:ArgCheck(callback, 2, "function")
 
 	if not self.settingsCallbacks then
 		self.settingsCallbacks = {}
@@ -512,7 +516,7 @@ end
 Trigger all registered option callbacks for the given `key`, supplying the `value`.
 --]]
 function addon:TriggerOptionCallback(key, value)
-	addon:ArgCheck(key, 1, 'string')
+	addon:ArgCheck(key, 1, "string")
 
 	if self.settingsCallbacks and self.settingsCallbacks[key] then
 		for _, callback in next, self.settingsCallbacks[key] do
@@ -527,7 +531,7 @@ end
 do
 	-- sliders aren't supported in menus, so we create our own custom element
 	local function resetSlider(frame)
-		frame.slider:UnregisterCallback('OnValueChanged', frame)
+		frame.slider:UnregisterCallback("OnValueChanged", frame)
 		frame.slider:Release()
 	end
 
@@ -536,12 +540,12 @@ do
 		local subMenu = element:CreateFrame()
 		subMenu:AddResetter(resetSlider)
 		subMenu:AddInitializer(function(frame)
-			local slider = frame:AttachTemplate('MinimalSliderWithSteppersTemplate')
-			slider:SetPoint('TOPLEFT', 0, -1)
+			local slider = frame:AttachTemplate("MinimalSliderWithSteppersTemplate")
+			slider:SetPoint("TOPLEFT", 0, -1)
 			slider:SetSize(150, 25)
-			slider:RegisterCallback('OnValueChanged', setter, frame)
+			slider:RegisterCallback("OnValueChanged", setter, frame)
 			slider:Init(getter(), minValue, maxValue, (maxValue - minValue) / steps, {
-				[MinimalSliderWithSteppersMixin.Label.Right] = formatter or defaultSliderFormatter
+				[MinimalSliderWithSteppersMixin.Label.Right] = formatter or defaultSliderFormatter,
 			})
 			frame.slider = slider -- ref for resetter
 
@@ -583,8 +587,8 @@ do
 	local function menuTooltip(button, element)
 		-- copied logic from MENU_WORLD_MAP_TRACKING filters
 		GameTooltip:ClearAllPoints()
-		GameTooltip:SetPoint('RIGHT', button, 'LEFT', -3, 0)
-		GameTooltip:SetOwner(button, 'ANCHOR_PRESERVE')
+		GameTooltip:SetPoint("RIGHT", button, "LEFT", -3, 0)
+		GameTooltip:SetOwner(button, "ANCHOR_PRESERVE")
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine(element.text, 1, 1, 1)
 		GameTooltip:AddLine(element.tooltip, nil, nil, nil, true)
@@ -611,23 +615,23 @@ do
 
 		-- TODO: menus also has "new feature" flags/textures, see if we can hook into that
 
-		Menu.ModifyMenu('MENU_WORLD_MAP_TRACKING', function(_, root)
+		Menu.ModifyMenu("MENU_WORLD_MAP_TRACKING", function(_, root)
 			root:CreateDivider()
-			root:CreateTitle((addonName:gsub('(%l)(%u)', '%1 %2')) .. HEADER_COLON)
+			root:CreateTitle((addonName:gsub("(%l)(%u)", "%1 %2")) .. HEADER_COLON)
 
 			for _, setting in next, settings do
 				local element
-				if setting.type == 'toggle' then
+				if setting.type == "toggle" then
 					element = root:CreateCheckbox(setting.title, function()
 						return addon:GetOption(setting.key)
 					end, function()
 						addon:SetOption(setting.key, not addon:GetOption(setting.key))
 					end)
-				elseif setting.type == 'slider' then
+				elseif setting.type == "slider" then
 					local formatter
-					if type(setting.valueFormat) == 'string' then
+					if type(setting.valueFormat) == "string" then
 						formatter = GenerateClosure(formatCustom, setting.valueFormat)
-					elseif type(setting.valueFormat) == 'function' then
+					elseif type(setting.valueFormat) == "function" then
 						formatter = setting.valueFormat
 					else
 						formatter = defaultSliderFormatter
@@ -638,7 +642,7 @@ do
 					end, function(_, value)
 						addon:SetOption(setting.key, value)
 					end, setting.minValue, setting.maxValue, setting.valueStep or 1, formatter)
-				elseif setting.type == 'color' then
+				elseif setting.type == "color" then
 					local value = addon:GetOption(setting.key)
 					local r, g, b, a = addon:CreateColor(value):GetRGBA()
 					element = root:CreateColorSwatch(setting.title, colorPickerClick, {
@@ -651,15 +655,10 @@ do
 						opacity = a,
 						hasOpacity = #value == 8,
 					})
-				elseif setting.type == 'menu' then
+				elseif setting.type == "menu" then
 					element = root:CreateButton(setting.title)
 					for _, option in next, setting.options do
-						element:CreateRadio(
-							option.label,
-							GenerateClosure(menuGetter, setting),
-							GenerateClosure(menuSetter, setting),
-							option.value
-						)
+						element:CreateRadio(option.label, GenerateClosure(menuGetter, setting, option.value), GenerateClosure(menuSetter, setting, option.value), option.value)
 					end
 				end
 
@@ -679,8 +678,8 @@ do
 	The `settings` object is identical to the one for [namespace:RegisterSetting()](#namespaceregistersettingssavedvariables-settings-).
 	--]]
 	function addon:RegisterMapSettings(savedvariable, settings)
-		addon:ArgCheck(savedvariable, 1, 'string')
-		addon:ArgCheck(settings, 2, 'table')
+		addon:ArgCheck(savedvariable, 1, "string")
+		addon:ArgCheck(settings, 2, "table")
 
 		-- ensure we only add the settings after savedvariables are available to the client
 		local _, isReady = C_AddOns.IsAddOnLoaded(addonName)
@@ -688,7 +687,7 @@ do
 			registerMapSettings(savedvariable, settings)
 		else
 			-- don't abuse OnLoad internally
-			addon:RegisterEvent('ADDON_LOADED', function(_, name)
+			addon:RegisterEvent("ADDON_LOADED", function(_, name)
 				if name == addonName then
 					registerMapSettings(savedvariable, settings)
 					return true -- unregister

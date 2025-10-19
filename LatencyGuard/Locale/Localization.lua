@@ -1,3 +1,5 @@
+-- Localization strings for LatencyGuard using Dashi's L helper.
+-- Add or adjust strings here; keys are reused by settings and runtime prints.
 local _, LatencyGuard = ...
 
 -- Use Dashi's localization helper
