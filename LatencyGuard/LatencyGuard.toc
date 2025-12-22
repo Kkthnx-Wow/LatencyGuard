@@ -1,15 +1,13 @@
-## Interface: 110105 110200
-## Name: Latency Guard
-## Title: |cff5bc0beLatency Guard|r
-## Notes: Advanced latency optimization addon that dynamically adjusts|nthe 'Spell Queue Window' based on your network latency.|n|nFeatures: Combat-safe updates, zero-latency handling,|nconfigurable thresholds, debug mode, multi-language support.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
+## Interface: 110105, 110207, 40400, 11503
+## Title: |cff00ccffLatencyGuard|r
+## Notes: Modularized SpellQueueWindow optimization. Dynamically adjusts ability queuing based on world latency for a snappier combat feel.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
 ## Author: Josh "Kkthnx" Russell
-## Version: 2.0.1
-## IconTexture: 134983
-## X-Support: TWW
+## Version: 2.0.2
+## IconTexture: Interface\AddOns\LatencyGuard\Media\LatencyGuard_Icon
 ## SavedVariables: LatencyGuardDB
 ## X-Curse-Project-ID: 1339938
 ## X-Category: Combat
-## X-Localizations: enUS, deDE, frFR, esES, ruRU
+## X-Localizations: enUS
 ## X-Website: https://github.com/Kkthnx-Wow/LatencyGuard
 
 ## Category-enUS: Kkthnx's AddOns
@@ -24,20 +22,6 @@
 ## Category-zhCN: Kkthnx's AddOns
 ## Category-zhTW: Kkthnx's AddOns
 
-## Libraries (load first for framework support)
-Libs\Dashi\embed.xml
-Libs\LibStub\LibStub.lua
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
-
-## Main addon file (constants, state, namespace initialization)
-LatencyGuard.lua
-
-## Core modules (modular architecture for maintainability)
-Core\Helpers.lua
-Core\Engine.lua
-Core\Events.lua
-Core\Commands.lua
-
-## Localization and configuration (load after core modules)
-Locale\Localization.lua
-Config\Settings.lua
+Core.lua
+Logic.lua
+Config.lua
