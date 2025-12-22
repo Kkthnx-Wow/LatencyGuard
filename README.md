@@ -1,160 +1,63 @@
-# LatencyGuard - WoW Addon
+# LatencyGuard
 
-## Overview
-
-LatencyGuard is a World of Warcraft addon that automatically optimizes your gameplay experience by dynamically adjusting the 'Spell Queue Window' based on your current network latency. This helps ensure optimal spell casting responsiveness regardless of your connection quality.
-
-## Features
-
-- **Automatic Latency Adjustment**: Continuously monitors your network latency and adjusts SpellQueueWindow accordingly
-- **Smart Zero-Latency Handling**: Special monitoring mode when zero latency is detected (common in local connections)
-- **Combat-Safe Operations**: Defers all CVar changes until you're out of combat
-- **Configurable Thresholds**: Set minimum latency differences required before making adjustments
-- **Maximum Latency Cap**: Prevents extremely high latency spikes from setting unreasonable values
-- **Debug Mode**: Comprehensive logging for troubleshooting
-- **Multi-Language Support**: Localization for English, German, French, Spanish, and Russian
-- **Performance Optimized**: Uses timer-based updates instead of high-frequency OnUpdate events
-
-## Configuration
-
-Access the configuration panel through:
-
-- **Interface Options**: Interface -> AddOns -> LatencyGuard
-- **Slash Commands**: `/lg` or `/latencyguard`
-
-### Settings
-
-#### Enable Latency Guard
-
-- **Default**: Disabled
-- **Description**: Master toggle for the addon functionality
-
-#### Enable Feedback Messages
-
-- **Default**: Disabled  
-- **Description**: Shows chat messages when SpellQueueWindow is updated
-- **Dependency**: Requires "Enable Latency Guard" to be enabled
-
-#### Latency Threshold (1-50ms)
-
-- **Default**: 1ms
-- **Description**: Minimum latency change required before updating SpellQueueWindow
-- **Recommendations**:
-  - 1-5ms: Responsive gameplay, frequent adjustments
-  - 10-20ms: Stable connections, fewer adjustments
-- **Dependency**: Requires "Enable Latency Guard" to be enabled
-
-#### Maximum Latency Cap (100-400ms)
-
-- **Default**: 300ms
-- **Description**: Maximum allowed SpellQueueWindow value to prevent extreme latency spikes from setting unreasonable values
-- **Recommendations**:
-  - 200-300ms: Most stable connections
-  - 300-400ms: High latency or unstable connections
-- **Dependency**: Requires "Enable Latency Guard" to be enabled
-
-#### Debug Mode
-
-- **Default**: Disabled
-- **Description**: Enables detailed debug information in chat (use only for troubleshooting)
-- **Warning**: Generates many chat messages
-- **Dependency**: Requires "Enable Latency Guard" to be enabled
-
-## Technical Improvements
-
-### Performance Optimizations
-
-- **Eliminated OnUpdate Frame**: Replaced high-frequency OnUpdate event with efficient timer-based system
-- **Cached API Functions**: Pre-cached frequently used WoW API functions for better performance
-- **Smart Update Logic**: Only performs updates when meaningful latency changes occur
-
-### Error Handling & Fail Safes
-
-- **Protected CVar Operations**: All CVar reads/writes are wrapped in pcall for error handling
-- **Combat Lockdown Protection**: Automatically defers updates during combat using Dashi's defer system
-- **Value Validation**: All numeric inputs are validated and clamped to safe ranges
-- **Update Attempt Limiting**: Prevents infinite update loops with configurable attempt limits
-- **Zero Latency Detection**: Special handling for zero latency scenarios
-
-### Code Quality
-
-- **Consistent camelCase Naming**: All variables and functions use proper camelCase convention
-- **Comprehensive Documentation**: Inline comments explaining functionality and edge cases
-- **Proper Dashi Framework Usage**: Leverages Dashi's event system, settings framework, and utilities
-- **Modular Design**: Clear separation of concerns with utility functions and state management
-
-### Enhanced Functionality
-
-- **External Change Monitoring**: Detects when SpellQueueWindow is modified by other sources
-- **Status Reporting**: Built-in GetStatus() function for debugging and monitoring
-- **Multi-Timer System**: Separate timers for regular updates and zero-latency monitoring
-- **Graceful Cleanup**: Proper cleanup of timers and events when addon is disabled
-
-## Usage Examples
-
-### Basic Usage
-
-1. Enable "Enable Latency Guard" in the settings
-2. Optionally enable "Enable Feedback Messages" to see when updates occur
-3. The addon will automatically monitor and adjust your SpellQueueWindow
-
-### Troubleshooting
-
-1. Enable "Debug Mode" to see detailed operation logs
-2. Use `/reload` after changing settings if needed
-3. Check that the addon is enabled and not paused by other addons
-
-### Advanced Configuration
-
-- Lower latency threshold (1-2ms) for competitive gameplay requiring instant responsiveness
-- Higher latency threshold (10-20ms) for casual gameplay to reduce notification frequency
-- Adjust maximum latency cap based on your typical connection quality
-
-## Compatibility
-
-- **WoW Version**: The War Within (Interface 110002)
-- **Dependencies**:
-  - Dashi Framework (included)
-  - LibStub (included)
-  - CallbackHandler-1.0 (included)
-
-## Developer Information
-
-### Architecture
-
-The addon uses the Dashi framework for:
-
-- Event handling with automatic cleanup
-- Settings management with validation
-- Localization support
-- Combat-safe operations with defer system
-
-### Code Structure
-
-```text
-LatencyGuard.lua         - Main addon logic and event handlers
-Config/Settings.lua      - Settings configuration and validation
-Locale/Localization.lua  - Multi-language support
-Libs/                    - Required libraries (Dashi, LibStub, CallbackHandler)
-```
-
-### Key Technical Decisions
-
-1. **Timer-based instead of OnUpdate**: Reduces CPU usage from ~60fps to configurable intervals
-2. **Protected CVar operations**: Prevents addon errors from game API changes
-3. **Dashi framework integration**: Provides robust foundation with tested patterns
-4. **Comprehensive validation**: Ensures all user inputs are safe and within game limits
-
-## License
-
-This addon follows standard WoW addon distribution practices. The included libraries maintain their respective licenses.
-
-## Credits
-
-- **Original Author**: Josh "Kkthnx" Russell
-- **Framework**: Dashi by p3lim
-- **Improvements**: Enhanced with modern best practices and comprehensive fail safes
+**LatencyGuard** is a high-performance World of Warcraft addon designed to eliminate input lag and optimize spell-casting responsiveness. It dynamically synchronizes the game's hidden `SpellQueueWindow` (SQW) with your real-time world latency, ensuring your ability queuing is always mathematically optimized for your current connection.
 
 ---
 
-*For support or bug reports, please check the addon's development repository or contact the maintainers.*
+## Key Features
+
+* **Dynamic Synchronization:** Automatically calculates and applies the optimal Spell Queue Window based on real-time world ping.
+* **Intelligent Discovery:** Features a high-frequency "Cold Start" mode to capture reliable data immediately upon login or instance transitions.
+* **Combat Safety:** Strictly respects WoW's combat lockdown rules, deferring CVar updates until the player has left combat.
+* **Jitter Prevention:** Uses hysteresis logic to avoid constant, minor updates to the game engine, only applying changes when network conditions shift significantly.
+* **Modular Architecture:** Built with a clean, production-grade codebase designed for maximum performance and zero global namespace pollution.
+
+---
+
+## Configuration
+
+Access the settings panel to fine-tune your experience:
+
+* **Slash Commands:** `/lg` or `/latencyguard`
+* **Menu Path:** `Escape` > `Options` > `AddOns` > `LatencyGuard`
+
+### Core Settings
+
+| Setting | Description | Recommended |
+| :--- | :--- | :--- |
+| **Enable Automation** | Master toggle for the logic loop. | Enabled |
+| **Chat Feedback** | Prints a message when SQW is adjusted. | Enabled (Verbose) |
+| **Tolerance Buffer** | The "padding" added to your current ping. | 100ms - 150ms |
+
+---
+
+## Technical Specifications
+
+### Performance Engineering
+* **Event-Driven:** Replaces heavy `OnUpdate` polling with an efficient dual-ticker system (30s Maintenance / 2s Discovery).
+* **Zero GC Footprint:** Pre-cached API globals and table reuse prevent memory churn and Lua garbage collection spikes.
+* **Namespace Discipline:** Uses a private namespace table to ensure zero conflicts with other addons or the Blizzard UI.
+
+### Compatibility
+* **Retail:** Fully supports *The War Within* (Interface 11.x) using the modern Settings API.
+* **Classic:** Support for *Classic Era*, *Season of Discovery*, and *Cataclysm Classic*.
+
+---
+
+## Installation
+
+1.  Download the latest release from [GitHub](https://github.com/Kkthnx-Wow/LatencyGuard/releases).
+2.  Extract the `LatencyGuard` folder into your `Interface\AddOns\` directory.
+3.  Restart World of Warcraft.
+
+---
+
+## Credits & Support
+
+**Author:** Josh "**Kkthnx**" Russell  
+**License:** Standard WoW Addon Distribution License.
+
+[![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.me/KkthnxTV)
+[![Support on Patreon](https://img.shields.io/badge/Support-Patreon-orange.svg)](https://www.patreon.com/Kkthnx)
+
+*For bug reports or feature requests, please visit the [GitHub Issue Tracker](https://github.com/Kkthnx-Wow/LatencyGuard/issues).*
