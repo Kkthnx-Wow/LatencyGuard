@@ -22,33 +22,31 @@ local HYSTERESIS = 40
 
 -- State
 Module.pendingUpdate = false
+Module.discoveryActive = false
+
+local function DiscoveryTimerCallback()
+	Module.discoveryActive = false
+	Module:UpdateQueueWindow()
+end
 
 function Module:UpdateQueueWindow()
-	if not LatencyGuardDB.enabled then
-		return
-	end
+	if not LatencyGuardDB.enabled then return end
 
 	local _, _, _, latencyWorld = GetNetStats()
 
-	-- Discovery Logic: If ping is 0, we haven't handshaked with the server yet.
 	if not latencyWorld or latencyWorld <= 0 then
 		if not self.discoveryActive then
 			self.discoveryActive = true
-			C_Timer.After(TICK_RATE_DISCOVERY, function()
-				self.discoveryActive = false
-				self:UpdateQueueWindow()
-			end)
+			C_Timer.After(TICK_RATE_DISCOVERY, DiscoveryTimerCallback)
 		end
 		return
 	end
 
-	-- Security Guard: Defer CVar updates until out of combat
 	if InCombatLockdown() then
 		self.pendingUpdate = true
 		return
 	end
 
-	-- Calculation
 	local target = latencyWorld + LatencyGuardDB.tolerance
 	target = math_max(MIN_QUEUE_WINDOW, target)
 	if target > MAX_QUEUE_WINDOW then
@@ -57,31 +55,33 @@ function Module:UpdateQueueWindow()
 
 	local current = tonumber(GetCVar("SpellQueueWindow")) or 400
 
-	-- Apply Hysteresis
 	if math_abs(current - target) >= HYSTERESIS then
 		SetCVar("SpellQueueWindow", target)
 		self.pendingUpdate = false
 
 		if LatencyGuardDB.verbose then
-			NS.Utils:Print(string_format("SQW set to |cFFFFD700%dms|r (Ping: %d + Buffer: %d)", target, latencyWorld, LatencyGuardDB.tolerance))
+			local L = NS.L
+			NS.Utils:Print(string_format(L["Logic_UpdateMessage"], target, latencyWorld, LatencyGuardDB.tolerance))
 		end
+	end
+end
+
+local function SteadyTickerCallback()
+	Module:UpdateQueueWindow()
+end
+
+local function OnRegenEnabled()
+	if Module.pendingUpdate then
+		Module:UpdateQueueWindow()
 	end
 end
 
 function Module:Init()
 	-- Create the maintenance ticker
-	C_Timer.NewTicker(TICK_RATE_STEADY, function()
-		self:UpdateQueueWindow()
-	end)
-
-	-- Register for combat exit to process deferred updates
-	local f = CreateFrame("Frame")
-	f:RegisterEvent("PLAYER_REGEN_ENABLED")
-	f:SetScript("OnEvent", function()
-		if self.pendingUpdate then
-			self:UpdateQueueWindow()
-		end
-	end)
+	C_Timer.NewTicker(TICK_RATE_STEADY, SteadyTickerCallback)
+	
+	-- Register Events
+	NS:RegisterEvent("PLAYER_REGEN_ENABLED", OnRegenEnabled)
 
 	-- Initial Run
 	self:UpdateQueueWindow()

@@ -3,12 +3,10 @@ NS.Modules.Config = {}
 local Module = NS.Modules.Config
 
 -- Cache Globals
-local _G = _G
-local CreateFrame = CreateFrame
-local math_floor = math.floor
+local type = type
 local string_format = string.format
-local GameTooltip = GameTooltip
 local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
+local L = NS.L
 
 -- Default reference for Reset function
 local DEFAULTS = {
@@ -18,129 +16,77 @@ local DEFAULTS = {
 }
 
 -- Branding colors
+local COL_RED = "|cFFFF0000"
 local COL_GOLD = "|cFFFFD700"
 local COL_BLUE = "|cff00ccff"
-local COL_RED = "|cFFFF0000"
-
--- Text Content
-local DESC_LONG = "The " .. COL_GOLD .. "Spell Queue Window|r is a hidden game setting that controls the 'buffer time' for your next ability. \n\n" .. COL_BLUE .. "LatencyGuard|r monitors your real-time world ping and adjusts this window so your gameplay feels snappy without losing the ability to queue spells effectively."
-
--- Helper: Add standardized tooltips
-local function AddTooltip(widget, title, text)
-	widget:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText(title, 1, 1, 1)
-		GameTooltip:AddLine(text, 1, 0.82, 0, true)
-		GameTooltip:Show()
-	end)
-	widget:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	end)
-end
 
 function Module:Init()
-	local panel = CreateFrame("Frame", nil, UIParent)
-	panel.name = ADDON_NAME
-	self.panel = panel
+	-- Create Canvas Layout for Main Info Page
+	local version = C_AddOns_GetAddOnMetadata(ADDON_NAME, "Version") or "Unknown"
+	local author = C_AddOns_GetAddOnMetadata(ADDON_NAME, "Author") or "Kkthnx"
 
-	-- Header
-	local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	local canvasFrame = CreateFrame("Frame", nil, UIParent)
+	local category = Settings.RegisterCanvasLayoutCategory(canvasFrame, ADDON_NAME)
+	self.category = category
+
+	local title = canvasFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
 	title:SetPoint("TOPLEFT", 16, -16)
-	title:SetText(ADDON_NAME .. " Configuration")
+	title:SetText(string_format(L["Config_Title"], version))
 
-	-- Description Box
-	local subtext = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-	subtext:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -12)
-	subtext:SetWidth(400)
-	subtext:SetJustifyH("LEFT")
-	subtext:SetText(DESC_LONG)
+	local authorText = canvasFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	authorText:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
+	authorText:SetText(string_format(L["Config_Author"], COL_GOLD, author))
 
-	-- Checkbox: Enable
-	local cbEnable = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
-	cbEnable:SetPoint("TOPLEFT", subtext, "BOTTOMLEFT", 0, -24)
-	cbEnable.Text:SetText("Automate Spell Queue Window")
-	cbEnable:SetChecked(LatencyGuardDB.enabled)
-	cbEnable:SetScript("OnClick", function(self)
-		LatencyGuardDB.enabled = self:GetChecked()
+	local descTitle = canvasFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	descTitle:SetPoint("TOPLEFT", authorText, "BOTTOMLEFT", 0, -24)
+	descTitle:SetText(L["Config_DescTitle"])
+
+	local descText = canvasFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	descText:SetPoint("TOPLEFT", descTitle, "BOTTOMLEFT", 0, -8)
+	descText:SetWidth(560)
+	descText:SetJustifyH("LEFT")
+	descText:SetText(string_format(L["Config_DescText"], COL_GOLD, COL_BLUE))
+
+	-- Register Main Category
+	Settings.RegisterAddOnCategory(category)
+
+	-- Create Subcategory for Settings
+	local subcategory = Settings.RegisterVerticalLayoutSubcategory(category, L["Config_OptionsCategory"])
+
+	-- Enable CheckBox
+	local function GetEnable() return LatencyGuardDB.enabled end
+	local function SetEnable(value)
+		LatencyGuardDB.enabled = value
 		NS.Modules.Logic:UpdateQueueWindow()
-	end)
-	AddTooltip(cbEnable, "Automation Status", "If checked, the addon will handle all Spell Queue adjustments.\n\n" .. COL_RED .. "Note:|r Disabling this stops all updates immediately.")
-	self.cbEnable = cbEnable
-
-	-- Checkbox: Verbose
-	local cbVerbose = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
-	cbVerbose:SetPoint("TOPLEFT", cbEnable, "BOTTOMLEFT", 0, -12)
-	cbVerbose.Text:SetText("Enable Chat Feedback")
-	cbVerbose:SetChecked(LatencyGuardDB.verbose)
-	cbVerbose:SetScript("OnClick", function(self)
-		LatencyGuardDB.verbose = self:GetChecked()
-	end)
-	AddTooltip(cbVerbose, "Verbose Mode", "Prints a message in your chat log whenever the Spell Queue Window is updated with a new target value.")
-	self.cbVerbose = cbVerbose
-
-	-- Slider: Tolerance
-	local slider = CreateFrame("Slider", ADDON_NAME .. "ToleranceSlider", panel, "OptionsSliderTemplate")
-	slider:SetPoint("TOPLEFT", cbVerbose, "BOTTOMLEFT", 20, -45)
-	slider:SetMinMaxValues(0, 300)
-	slider:SetValueStep(10)
-	slider:SetObeyStepOnDrag(true)
-	slider:SetWidth(250)
-
-	_G[slider:GetName() .. "Low"]:SetText("0ms")
-	_G[slider:GetName() .. "High"]:SetText("300ms")
-	local sliderText = _G[slider:GetName() .. "Text"]
-
-	slider:SetValue(LatencyGuardDB.tolerance)
-	sliderText:SetText(string_format("Tolerance Buffer: %dms", LatencyGuardDB.tolerance))
-
-	slider:SetScript("OnValueChanged", function(self, value)
-		value = math_floor(value)
-		LatencyGuardDB.tolerance = value
-		sliderText:SetText(string_format("Tolerance Buffer: %dms", value))
-		NS.Modules.Logic:UpdateQueueWindow()
-	end)
-	AddTooltip(slider, "Tolerance Buffer", "This value is added to your current world ping.\n\nHigh values (200+) are safer for high-latency connections.\nLow values (50-100) are better for high-end competitive play.")
-	self.slider = slider
-
-	-- Button: Reset to Defaults
-	local resetBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-	resetBtn:SetPoint("BOTTOMLEFT", 16, 16)
-	resetBtn:SetSize(140, 26)
-	resetBtn:SetText("Reset to Defaults")
-	resetBtn:SetScript("OnClick", function()
-		LatencyGuardDB.enabled = DEFAULTS.enabled
-		LatencyGuardDB.verbose = DEFAULTS.verbose
-		LatencyGuardDB.tolerance = DEFAULTS.tolerance
-
-		-- Sync UI elements
-		self.cbEnable:SetChecked(DEFAULTS.enabled)
-		self.cbVerbose:SetChecked(DEFAULTS.verbose)
-		self.slider:SetValue(DEFAULTS.tolerance)
-
-		NS.Utils:Print("Settings have been reset.")
-		NS.Modules.Logic:UpdateQueueWindow()
-	end)
-	AddTooltip(resetBtn, "Factory Reset", "Restore all addon settings to their original values.")
-
-	-- Version String
-	local version = panel:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	version:SetPoint("BOTTOMRIGHT", -16, 16)
-	version:SetText("v" .. (C_AddOns_GetAddOnMetadata(ADDON_NAME, "Version") or "2.0.2"))
-
-	-- Category Registration
-	if Settings and Settings.RegisterCanvasLayoutCategory then
-		local category = Settings.RegisterCanvasLayoutCategory(panel, ADDON_NAME)
-		Settings.RegisterAddOnCategory(category)
-		self.category = category
-	else
-		InterfaceOptions_AddCategory(panel)
 	end
+	local settingEnable = Settings.RegisterProxySetting(subcategory, "LatencyGuard_Enabled", type(DEFAULTS.enabled), L["Config_Enable"], DEFAULTS.enabled, GetEnable, SetEnable)
+	Settings.CreateCheckbox(subcategory, settingEnable, string_format(L["Config_EnableTooltip"], COL_RED))
+
+	-- Verbose CheckBox
+	local function GetVerbose() return LatencyGuardDB.verbose end
+	local function SetVerbose(value) LatencyGuardDB.verbose = value end
+	local settingVerbose = Settings.RegisterProxySetting(subcategory, "LatencyGuard_Verbose", type(DEFAULTS.verbose), L["Config_Verbose"], DEFAULTS.verbose, GetVerbose, SetVerbose)
+	Settings.CreateCheckbox(subcategory, settingVerbose, L["Config_VerboseTooltip"])
+
+	-- Tolerance Slider
+	local function GetTolerance() return LatencyGuardDB.tolerance end
+	local function SetTolerance(value)
+		LatencyGuardDB.tolerance = value
+		NS.Modules.Logic:UpdateQueueWindow()
+	end
+	local settingTolerance = Settings.RegisterProxySetting(subcategory, "LatencyGuard_Tolerance", type(DEFAULTS.tolerance), L["Config_Tolerance"], DEFAULTS.tolerance, GetTolerance, SetTolerance)
+	
+	local sliderOptions = Settings.CreateSliderOptions(0, 300, 10)
+	sliderOptions:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
+		return string_format("%dms", value)
+	end)
+	
+	Settings.CreateSlider(subcategory, settingTolerance, sliderOptions, L["Config_ToleranceTooltip"])
 end
 
 function Module:Open()
 	if Settings and Settings.OpenToCategory then
 		Settings.OpenToCategory(self.category:GetID())
-	else
-		InterfaceOptionsFrame_OpenToCategory(self.panel)
 	end
 end
+
