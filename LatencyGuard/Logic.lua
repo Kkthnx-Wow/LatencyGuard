@@ -13,6 +13,10 @@ local math_abs = math.abs
 local tonumber = tonumber
 local string_format = string.format
 
+-- Secret Values (Midnight 12.0+). `issecretvalue` only exists on Midnight clients;
+-- the TOC also targets older flavors, so fall back to a no-op that reports "not secret".
+local issecretvalue = issecretvalue or function() return false end
+
 -- Constants
 local TICK_RATE_STEADY = 30
 local TICK_RATE_DISCOVERY = 2
@@ -33,6 +37,11 @@ function Module:UpdateQueueWindow()
 	if not LatencyGuardDB.enabled then return end
 
 	local _, _, _, latencyWorld = GetNetStats()
+
+	-- GetNetStats is network telemetry, not combat data, so Blizzard does not
+	-- secret it. Guard anyway: comparing/adding a Secret throws a Lua error, and
+	-- we'd rather skip a cycle than break if the API is ever secreted.
+	if issecretvalue(latencyWorld) then return end
 
 	if not latencyWorld or latencyWorld <= 0 then
 		if not self.discoveryActive then
