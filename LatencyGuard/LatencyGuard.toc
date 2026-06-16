@@ -1,13 +1,13 @@
-## Interface: 120005
+## Interface: 120007, 11508, 20505, 50504
 ## Title: |cff00ccffLatencyGuard|r
-## Notes: Modularized SpellQueueWindow optimization. Dynamically adjusts ability queuing based on world latency for a snappier combat feel.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
+## Notes: Dynamically adjusts your Spell Queue Window based on world latency for a snappier combat feel.|n|n|cff00ccffDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
 ## Author: Josh "Kkthnx" Russell
-## Version: 2.0.4
+## Version: 3.0.0
 ## IconTexture: Interface\AddOns\LatencyGuard\Media\LatencyGuard_Icon
 ## SavedVariables: LatencyGuardDB
 ## X-Curse-Project-ID: 1339938
 ## X-Category: Combat
-## X-Localizations: enUS
+## X-Support: Midnight
 ## X-Website: https://github.com/Kkthnx-Wow/LatencyGuard
 
 ## Category-enUS: Kkthnx's AddOns
@@ -22,18 +22,30 @@
 ## Category-zhCN: Kkthnx's AddOns
 ## Category-zhTW: Kkthnx's AddOns
 
-Locales\enUS.lua
-Locales\deDE.lua
-Locales\esES.lua
-Locales\esMX.lua
-Locales\frFR.lua
-Locales\itIT.lua
-Locales\koKR.lua
-Locales\ptBR.lua
-Locales\ruRU.lua
-Locales\trTR.lua
-Locales\zhCN.lua
-Locales\zhTW.lua
-Core.lua
-Logic.lua
-Config.lua
+# ----------------------------------------------------------------------------
+# Core engine
+# ----------------------------------------------------------------------------
+Core\Engine.lua
+Core\Constants.lua
+Core\Functions.lua
+Core\Database.lua
+
+Core\Locales\enUS.lua
+Core\Locales\deDE.lua
+Core\Locales\esES.lua
+Core\Locales\esMX.lua
+Core\Locales\frFR.lua
+Core\Locales\itIT.lua
+Core\Locales\koKR.lua
+Core\Locales\ptBR.lua
+Core\Locales\ruRU.lua
+Core\Locales\trTR.lua
+Core\Locales\zhCN.lua
+Core\Locales\zhTW.lua
+
+Core\Commands.lua
+
+# ----------------------------------------------------------------------------
+# Modules
+# ----------------------------------------------------------------------------
+Modules\SpellQueue\SpellQueue.lua
