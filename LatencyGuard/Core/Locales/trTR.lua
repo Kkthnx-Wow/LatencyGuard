@@ -11,5 +11,5 @@ L["Enable Chat Feedback Tooltip"] = "Büyü Kuyruğu Penceresi yeni bir hedef de
 L["Tolerance Buffer"] = "Tolerans Arabelleği"
 L["Tolerance Buffer Tooltip"] = "Bu değer mevcut dünya ping'inize eklenir.\n\nYüksek değerler (200+) yüksek gecikmeli bağlantılar için daha güvenlidir.\nDüşük değerler (50-100) üst düzey rekabetçi oyunlar için daha iyidir."
 
-L["Init Message"] = "v%s başlatıldı. Yapılandırmak için |cFFFFD700/lg|r kullanın."
+L["Init Message"] = "v%s başlatıldı. Yapılandırmak için %s kullanın."
 L["Update Message"] = "SQW |cFFFFD700%dms|r olarak ayarlandı (Ping: %d + Arabellek: %d)"

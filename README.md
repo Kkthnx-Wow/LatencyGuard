@@ -4,9 +4,11 @@
 
 **A lightweight, set-and-forget tuner for your Spell Queue Window — it adapts to your ping so your combat always feels snappy.**
 
+![LatencyGuard](Media/LatencyGuard_Icon.png)
+
 [![Last Commit](https://img.shields.io/github/last-commit/Kkthnx-Wow/LatencyGuard)](https://github.com/Kkthnx-Wow/LatencyGuard/commits/main)
 [![Issues](https://img.shields.io/github/issues/Kkthnx-Wow/LatencyGuard)](https://github.com/Kkthnx-Wow/LatencyGuard/issues)
-[![CurseForge](https://img.shields.io/badge/CurseForge-Download-orange)](https://www.curseforge.com/wow/addons/latency-guard)
+[![CurseForge](https://img.shields.io/badge/CurseForge-Download-orange)](https://www.curseforge.com/wow/addons/latencyguard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Kkthnx-Wow/LatencyGuard/blob/main/LICENSE)
 
 </div>
@@ -17,10 +19,10 @@
 
 The **Spell Queue Window** is a hidden game setting (`SpellQueueWindow`) that controls the "buffer time" the game gives you to queue your next ability before the current one finishes. Set it too low and your rotation feels clunky and drops casts; set it too high and you lose precise control. The catch is that the *ideal* value depends entirely on your **world latency** — which changes from zone to zone, fight to fight, and day to day.
 
-**LatencyGuard** solves that for you. It monitors your real-time world ping and continuously recalculates the optimal queue window — your ping plus a tolerance buffer of your choosing — so your gameplay stays responsive without losing the ability to queue spells effectively. High latency automatically gets a wider window; low latency gets a tighter one. You set it once and forget it.
+**LatencyGuard** solves that for you. It monitors your world ping and continuously recalculates the optimal queue window — your ping plus a safety margin, with optional jitter-aware widening when your connection is unstable.
 
 - **Set-and-forget** — no math, no `/console` commands, no guessing. It just keeps the right value applied.
-- **Adaptive** — recalculates from your live world latency, so it tracks your connection as it changes.
+- **Adaptive** — recalculates from live **world** latency via `GetNetStats()`, aligned with how Blizzard routes combat input.
 - **Combat-safe** — never touches a protected CVar mid-fight; pending changes are deferred until combat ends.
 - **Performance-first** — event-driven with a low-frequency maintenance tick, local caches, and a change threshold so it only writes when it actually matters.
 - **Native settings** — a clean options panel built on Blizzard's own Settings API.
@@ -37,7 +39,7 @@ The **Spell Queue Window** is a hidden game setting (`SpellQueueWindow`) that co
 2. Extract the `LatencyGuard` folder into `World of Warcraft\_retail_\Interface\AddOns`.
 3. Restart the game (or `/reload` if already in-game).
 
-There's nothing to configure to get the benefit — LatencyGuard starts managing your Spell Queue Window the moment you log in. Tweak the behavior anytime with `/lg`.
+There's nothing to configure to get the benefit — LatencyGuard starts managing your Spell Queue Window the moment you log in. Tweak the behavior anytime with `/latencyguard` or `/latguard`.
 
 ---
 
@@ -45,20 +47,21 @@ There's nothing to configure to get the benefit — LatencyGuard starts managing
 
 | Command | Description |
 | --- | --- |
-| `/lg` | Open the options panel |
 | `/latencyguard` | Open the options panel |
+| `/latguard` | Open the options panel (short alias) |
+| `/latencyguard status` | Print diagnostic ping/SQW state (for bug reports) |
 
-On login (with chat feedback enabled) LatencyGuard prints a short confirmation and the `/lg` hint. From then on it works quietly in the background.
+It runs silently in the background. Enable **SQW Update Messages** in settings if you want chat lines when the window changes.
 
 ---
 
 ## Features
 
 ### Automatic Tuning
-- **Adaptive Spell Queue Window** — reads your world latency and sets `SpellQueueWindow` to `ping + tolerance`, recalculated on a steady maintenance cycle so it always reflects your current connection.
-- **Smart clamping** — the target is kept within a sensible **100–400ms** range, so a latency spike (or a near-zero reading) can never push you to an unusable value.
-- **Change threshold (hysteresis)** — the addon only rewrites the CVar when the new target differs from the current value by a meaningful amount, avoiding constant churn from tiny ping fluctuations.
-- **Latency discovery** — `GetNetStats` only refreshes world latency periodically, so right after login (when no reading is available yet) LatencyGuard briefly polls until it gets a valid number, then settles into its normal cadence.
+- **Adaptive Spell Queue Window** — sets `SpellQueueWindow` to `worldPing + margin`, clamped **100–400ms** (Blizzard default is 400).
+- **Jitter-aware margin** — when enabled, adds `2 × σ` to your safety margin based on the last 25 world-latency samples; widens the queue when ping is unstable, tightens when stable.
+- **Change threshold (hysteresis)** — only rewrites the CVar when the target moved meaningfully, avoiding churn from tiny fluctuations.
+- **Latency discovery** — briefly polls after login until `GetNetStats` returns a valid world reading, then settles into a 30s cadence.
 
 ### Combat Safety
 - **Deferred writes** — `SpellQueueWindow` can't be changed while you're in combat. If an update is due mid-fight, LatencyGuard flags it and applies it the instant combat ends (`PLAYER_REGEN_ENABLED`).
@@ -66,8 +69,9 @@ On login (with chat feedback enabled) LatencyGuard prints a short confirmation a
 
 ### Options
 - **Automate Spell Queue Window** — the master switch. When off, LatencyGuard stops all adjustments immediately and leaves your CVar alone.
-- **Tolerance Buffer** — the value added to your world ping (0–300ms, default **150**). Higher values (200+) are safer for high-latency connections; lower values (50–100) suit high-end competitive play.
-- **Chat Feedback** — optionally print a line whenever the queue window is updated, showing the new value, your ping, and the buffer used.
+- **Safety Margin** — base headroom added to world ping (default **100ms**).
+- **Adaptive Jitter Margin** — on by default; adds `2 × σ` when latency variance is detected (needs 3+ samples).
+- **Chat Feedback** — optionally print a line when the queue window changes, with base + jitter breakdown.
 
 ### Localization
 - Ships with translations for **enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, trTR, zhCN, and zhTW**, with a graceful English fallback for any missing strings.
@@ -76,13 +80,14 @@ On login (with chat feedback enabled) LatencyGuard prints a short confirmation a
 
 ## Configuration
 
-Open the panel with **`/lg`** (or through the Blizzard AddOns settings). The main page explains what the Spell Queue Window is and why the addon exists; the **Options** subcategory holds the live toggles:
+Open the panel with **`/latencyguard`** or **`/latguard`** (or through the Blizzard AddOns settings). The main page explains what the Spell Queue Window is and why the addon exists; the **Options** subcategory holds the live toggles:
 
 | Setting | Default | What it does |
 | --- | --- | --- |
 | Automate Spell Queue Window | On | Enables/disables all automatic adjustments |
-| Tolerance Buffer | 150ms | Added to your world ping when computing the target window |
-| Enable Chat Feedback | On | Prints a message each time the window is updated |
+| Adaptive Jitter Margin | On | Widen margin when connection latency is unstable |
+| Safety Margin | 100ms | Base headroom added to world ping |
+| Enable Chat Feedback | Off | Print a line each time the spell queue window is updated |
 
 All settings apply **live** — there's nothing to reload.
 
@@ -90,12 +95,12 @@ All settings apply **live** — there's nothing to reload.
 
 ## How It Works
 
-1. **Measure** — `GetNetStats()` reports your average world latency (the game refreshes this roughly every 30 seconds).
-2. **Calculate** — LatencyGuard computes `target = worldPing + tolerance`, then clamps it into the safe **100–400ms** range.
-3. **Compare** — it checks the target against your current `SpellQueueWindow`. If the difference is below the change threshold, it does nothing.
-4. **Apply** — otherwise it writes the new value — but only out of combat. If you're mid-fight, the change waits until combat ends.
+1. **Measure** — `GetNetStats()` **world** latency (combat path; home is shown in status only). Refreshes ~every 30s.
+2. **Calculate** — `target = worldPing + safetyMargin + (2×jitterσ when adaptive)`, clamped to **100–400ms**.
+3. **Compare** — apply when target moved **40ms+** since last write, or the game value drifted **40ms+** from target.
+4. **Apply** — `SetCVar` only out of combat; deferred to `PLAYER_REGEN_ENABLED`.
 
-The result: a Spell Queue Window that's always matched to your actual connection, with zero manual upkeep.
+Jitter σ is measured from the last 25 world-latency samples (~12 min at steady ping). Needs 3+ samples before adaptive margin applies.
 
 ---
 

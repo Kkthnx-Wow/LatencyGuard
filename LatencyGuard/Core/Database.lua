@@ -10,7 +10,13 @@
 --]]
 
 local _, ns = ...
-local F = ns.F
+local F, C = ns.F, ns.C
+
+local UnitName = UnitName
+local GetRealmName = GetRealmName
+local floor = math.floor
+local max = math.max
+local min = math.min
 
 ns.defaults = {
 	profile = {},
@@ -26,15 +32,48 @@ local DB_SCHEMA_VERSION = 1
 
 local migrations = {}
 
+local SQ = C.SpellQueue
+
+local function GetPlayerKey()
+	local name = UnitName("player") or "Unknown"
+	local realm = GetRealmName() or "Unknown"
+	return name .. " - " .. realm
+end
+
+local function SanitizeSpellQueue(settings)
+	if type(settings) ~= "table" then
+		return
+	end
+
+	if type(settings.tolerance) ~= "number" then
+		settings.tolerance = 100
+	else
+		settings.tolerance = floor(max(SQ.TOLERANCE_MIN, min(SQ.TOLERANCE_MAX, settings.tolerance)) + 0.5)
+	end
+
+	if type(settings.enable) ~= "boolean" then
+		settings.enable = true
+	end
+
+	if type(settings.verbose) ~= "boolean" then
+		settings.verbose = false
+	end
+
+	if type(settings.adaptiveJitter) ~= "boolean" then
+		settings.adaptiveJitter = true
+	end
+end
+
 local function MigrateDatabase(root)
 	-- v0 -> v1: flat LatencyGuardDB { enabled, verbose, tolerance } -> profile tree
 	if root.enabled ~= nil and not root.profiles then
+		local tolerance = type(root.tolerance) == "number" and root.tolerance or 100
 		root.profiles = {
 			Default = {
 				spellQueue = {
 					enable = root.enabled,
 					verbose = root.verbose ~= false,
-					tolerance = type(root.tolerance) == "number" and root.tolerance or 150,
+					tolerance = tolerance,
 				},
 			},
 		}
@@ -57,11 +96,13 @@ end
 
 function ns:SetProfile(profileName)
 	local root = _G.LatencyGuardDB
-	root.profileKeys[ns.C.Player.key] = profileName
+	root.profileKeys[C.Player.key] = profileName
 	root.profiles[profileName] = root.profiles[profileName] or {}
 
 	ns.db = F.CopyDefaults(ns.defaults.profile, root.profiles[profileName])
 	ns.profileName = profileName
+
+	SanitizeSpellQueue(ns.db.spellQueue)
 
 	if ns.OnProfileChanged then
 		ns:OnProfileChanged(profileName)
@@ -77,6 +118,10 @@ function ns:SetupDatabase()
 
 	MigrateDatabase(root)
 
+	C.Player.name = UnitName("player") or C.Player.name
+	C.Player.realm = GetRealmName() or C.Player.realm
+	C.Player.key = GetPlayerKey()
+
 	ns.global = root.global
-	ns:SetProfile(root.profileKeys[ns.C.Player.key] or "Default")
+	ns:SetProfile(root.profileKeys[C.Player.key] or "Default")
 end

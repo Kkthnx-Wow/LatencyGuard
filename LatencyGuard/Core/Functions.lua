@@ -17,7 +17,7 @@ local wipe = wipe
 local C_Timer = C_Timer
 local DEFAULT_CHAT_FRAME = DEFAULT_CHAT_FRAME
 
-local PREFIX = format("|c%s%s|r:", C.BrandHex, "LatencyGuard")
+local PREFIX = format("|c%sLatency|c%sGuard|r:", C.BrandHex, C.BrandAccentHex)
 
 local printBuffer = {}
 
@@ -35,6 +35,18 @@ function F.RGBToHex(r, g, b)
 		r, g, b = r[1], r[2], r[3]
 	end
 	return format("ff%02x%02x%02x", r * 255, g * 255, b * 255)
+end
+
+function F.Brand(text)
+	return format("|c%s%s|r", C.BrandHex, text)
+end
+
+function F.BrandAccent(text)
+	return format("|c%s%s|r", C.BrandAccentHex, text)
+end
+
+function F.BrandTitle()
+	return format("|c%sLatency|c%sGuard|r", C.BrandHex, C.BrandAccentHex)
 end
 
 function F.Colorize(text, color)

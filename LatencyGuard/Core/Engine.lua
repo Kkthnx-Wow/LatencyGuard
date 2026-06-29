@@ -30,6 +30,8 @@ ns.L = ns.L or setmetatable({}, {
 	end,
 })
 
+local F = ns.F
+
 -- ---------------------------------------------------------------------------
 -- Module registry
 -- ---------------------------------------------------------------------------
@@ -206,7 +208,7 @@ local function RunCallback(module, method)
 	end
 	local ok, err = pcall(fn, module)
 	if not ok then
-		ns.F.Print("|cffff5555Error in", module.name, "(" .. method .. "):|r", err)
+		F.Print(F.Colorize("Error in " .. module.name .. " (" .. method .. "):", "red"), err)
 	end
 end
 

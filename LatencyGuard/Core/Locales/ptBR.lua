@@ -11,5 +11,5 @@ L["Enable Chat Feedback Tooltip"] = "Imprime uma mensagem em seu registro de cha
 L["Tolerance Buffer"] = "Buffer de Tolerância"
 L["Tolerance Buffer Tooltip"] = "Este valor é adicionado ao seu ping mundial atual.\n\nValores altos (200+) são mais seguros para conexões de alta latência.\nValores baixos (50-100) são melhores para jogabilidade competitiva de alto nível."
 
-L["Init Message"] = "v%s inicializado. Use |cFFFFD700/lg|r para configurar."
+L["Init Message"] = "v%s inicializado. Use %s para configurar."
 L["Update Message"] = "SQW definido para |cFFFFD700%dms|r (Ping: %d + Buffer: %d)"
