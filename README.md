@@ -4,12 +4,12 @@
 
 **A lightweight, set-and-forget tuner for your Spell Queue Window — it adapts to your ping so your combat always feels snappy.**
 
-![LatencyGuard](Media/LatencyGuard_Icon.png)
-
 [![Last Commit](https://img.shields.io/github/last-commit/Kkthnx-Wow/LatencyGuard)](https://github.com/Kkthnx-Wow/LatencyGuard/commits/main)
 [![Issues](https://img.shields.io/github/issues/Kkthnx-Wow/LatencyGuard)](https://github.com/Kkthnx-Wow/LatencyGuard/issues)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-orange)](https://www.curseforge.com/wow/addons/latencyguard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Kkthnx-Wow/LatencyGuard/blob/main/LICENSE)
+
+<img width="256" height="256" alt="Icon256" src="https://github.com/user-attachments/assets/d40a8c0a-62c6-420f-aed5-29ce08ec86e1" />
 
 </div>
 
