@@ -1,0 +1,15 @@
+package-as: LatencyGuard
+
+# LibStub, CallbackHandler-1.0 and LibDataBroker-1.1 are bundled in Libs,
+# so there is no separate no-lib build.
+enable-nolib-creation: no
+
+# Repository furniture that has no business inside the addon folder.
+ignore:
+    - .gitignore
+    - .gitattributes
+    - .github
+    - .luacheckrc
+    - .vscode
+    - tests
+    - README.md

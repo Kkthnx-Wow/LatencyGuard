@@ -1,0 +1,75 @@
+# Packages the addon and publishes it to GitHub Releases and CurseForge.
+#
+#   CurseForge  "## X-Curse-Project-ID: 1339938" in LatencyGuard.toc, and a
+#               CF_API_KEY repository secret holding a CurseForge API token
+#   Wago        "## X-Wago-ID: <id>" in LatencyGuard.toc, WAGO_API_TOKEN secret
+#
+# A site whose id or token is missing is skipped, not an error.
+#
+# The TOC lists one interface number per client (Retail and Forever), and the
+# packager tags the single upload with the game versions for each of them.
+#
+# Runs when an annotated tag is pushed. The tag name becomes the version, so
+# tag what you want the release called.
+#
+#   git tag -a 3.0.0 -m "3.0.0"
+#   git push origin 3.0.0
+name: Release
+
+on:
+  push:
+    tags:
+      - "**"
+
+# The packager creates the GitHub release itself, which needs write access to
+# contents.
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v7
+
+      - name: Install Lua 5.1 and luacheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 luarocks
+          sudo luarocks install luacheck
+
+      - name: Lint
+        run: luacheck .
+
+      - name: Behaviour tests
+        run: |
+          lua5.1 tests/run.lua
+          lua5.1 tests/run.lua . fresh
+
+  release:
+    name: Package and release
+    needs: test
+    runs-on: ubuntu-latest
+
+    env:
+      # The packager reads CF_API_TOKEN. The secret keeps the name used in the
+      # other Kkthnx repositories.
+      CF_API_TOKEN: ${{ secrets.CF_API_KEY }}
+      WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+      # Provided by Actions automatically.
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v7
+        with:
+          # The changelog is built from the commits since the previous tag, so
+          # the full history has to be there.
+          fetch-depth: 0
+
+      # The release type comes from the tag. A tag containing "beta" uploads as
+      # a beta, "alpha" as an alpha, anything else as a full release.
+      - name: Package and release
+        uses: BigWigsMods/packager@v2
